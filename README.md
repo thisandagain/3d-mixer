@@ -2,7 +2,7 @@
 The 3D mixer is a Open Frameworks based 8-channel 3D sound mixer prototype.
 
 ## Screenshot
-![](http://github.com/thisandagain/3d-mixer/blob/master/screenshot.png) 
+![Screenshot](https://github.com/thisandagain/3d-mixer/raw/master/screenshot.png) 
 
 ## Output Settings
 By default, the application will use MacOS's system settings when assigning the output device. Normally, this will look something like:
