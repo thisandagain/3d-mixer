@@ -28,10 +28,9 @@ void testApp::setup(){
 	c7Audio.assign(bufferSize, 0.0);
 	c8Audio.assign(bufferSize, 0.0);
 	
-	soundStream.listDevices();
-	
-	//if you want to set the device id to be different than the default
-	//soundStream.setDeviceID(1); 	//note some devices are input only and some are output only 
+	// Device information (debug)
+	//soundStream.listDevices();
+	//soundStream.setDeviceID(1);		//note some devices are input only and some are output only 
 
 	soundStream.setup(this, 2, 0, sampleRate, bufferSize, 4);
 
@@ -51,8 +50,10 @@ void testApp::draw(){
 	ofDrawBitmapString("3D SOUND - FRONT", 32, 32);
 	ofDrawBitmapString("3D SOUND - REAR", 32, 292);
 	//ofDrawBitmapString("press 's' to unpause the audio\npress 'e' to pause the audio", 31, 92);
-	
 	ofNoFill();
+	
+	// -----
+	// -----
 	
 	// draw channel 1:
 	ofPushStyle();
@@ -249,12 +250,14 @@ void testApp::draw(){
 	ofPopMatrix();
 	ofPopStyle();
 	
-	// -------------------------
+	// -----
+	// -----
+	
 	ofSetColor(225);
 	string reportString		= "";
-	reportString			+= "volume: ("+ofToString(volume, 2)+") modify with -/+ keys\n";
-	reportString			+= "pan:    ("+ofToString(pan, 2)+") modify with mouse x\n";
-	reportString			+= "tilt:   ("+ofToString(tilt, 2)+") modify with mouse y\n";
+	reportString			+= "volume: (" + ofToString(volume, 2) + ") modify with -/+ keys\n";
+	reportString			+= "x-axis: (" + ofToString(xaxis, 2) + ") modify with mouse x\n";
+	reportString			+= "y-axis: (" + ofToString(yaxis, 2) + ") modify with mouse y\n";
 	reportString			+= "synthesis: ";
 	
 	if( !bNoise ){
@@ -284,7 +287,6 @@ void testApp::keyPressed  (int key){
 	if( key == 'e' ){
 		soundStream.stop();
 	}
-	
 }
 
 //--------------------------------------------------------------
@@ -294,13 +296,13 @@ void testApp::keyReleased  (int key){
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-	int width = ofGetWidth();
-	pan = (float)x / (float)width;
-	float height = (float)ofGetHeight();
-	tilt = (float)y / (float)height;
-	float heightPct = ((height-y) / height);
-	targetFrequency = 2000.0f * heightPct;
-	phaseAdderTarget = (targetFrequency / (float) sampleRate) * TWO_PI;
+	// Storage objects
+	float width		= (float) ofGetWidth();
+	float height	= (float) ofGetHeight();
+	
+	// Update globals
+	xaxis = (float) x / width;
+	yaxis = (float) y / height;
 }
 
 //--------------------------------------------------------------
@@ -327,37 +329,33 @@ void testApp::windowResized(int w, int h){
 
 //--------------------------------------------------------------
 void testApp::audioOut(float * output, int bufferSize, int nChannels){	
-	//pan = 0.5f;
-	float leftScale = 1 - pan;
-	float rightScale = pan;
-
 	// sin (n) seems to have trouble when n is very large, so we
 	// keep phase in the range of 0-TWO_PI like this:
 	while (phase > TWO_PI){
 		phase -= TWO_PI;
 	}
 
-	if ( bNoise == true){
+	if ( bNoise == true) {
 		// ---------------------- noise --------------
 		for (int i = 0; i < bufferSize; i++){
-			c1Audio[i] = output[i*nChannels    ] = ofRandom(0, 1) * volume * leftScale;
-			c2Audio[i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * rightScale;
-			c3Audio[i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * rightScale;
-			c4Audio[i] = output[i*nChannels + 3] = ofRandom(0, 1) * volume * rightScale;
+			c1Audio[i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
+			c2Audio[i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
+			c3Audio[i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
+			c4Audio[i] = output[i*nChannels + 3] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
 			
-			c5Audio[i] = output[i*nChannels + 4] = ofRandom(0, 1) * volume * rightScale;
-			c6Audio[i] = output[i*nChannels + 5] = ofRandom(0, 1) * volume * rightScale;
-			c7Audio[i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * rightScale;
-			c8Audio[i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * rightScale;
+			c5Audio[i] = output[i*nChannels + 4] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
+			c6Audio[i] = output[i*nChannels + 5] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
+			c7Audio[i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
+			c8Audio[i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
 		}
 	} else {
-		// ---------------------- sine wave --------------
+		// ---------------------- sine wave ----------
 		phaseAdder = 0.95f * phaseAdder + 0.05f * phaseAdderTarget;
 		for (int i = 0; i < bufferSize; i++){
 			phase += phaseAdder;
 			float sample = sin(phase);
-			c1Audio[i] = output[i*nChannels    ] = sample * volume * leftScale;
-			c2Audio[i] = output[i*nChannels + 1] = sample * volume * rightScale;
+			c1Audio[i] = output[i*nChannels    ] = sample * volume * ( xaxis );
+			c2Audio[i] = output[i*nChannels + 1] = sample * volume * ( xaxis );
 		}
 	}
 

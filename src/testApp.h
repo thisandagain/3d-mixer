@@ -27,6 +27,10 @@ class testApp : public ofBaseApp{
 		
 		ofSoundStream soundStream;
 
+		float   xaxis;
+		float   yaxis;
+		float   zaxis;
+	
 		float 	pan;
 		float	tilt;
 		int		sampleRate;
