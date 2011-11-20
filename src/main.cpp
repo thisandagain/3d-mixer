@@ -1,16 +1,27 @@
+/**
+ * @package  3dmixer
+ * @author  Andrew Sliwinski <andrew@unitedworkshop.com>
+ */
+ 
+/**
+ * Includes
+ */
 #include "ofMain.h"
 #include "testApp.h"
 #include "ofAppGlutWindow.h"
 
-//========================================================================
+/**
+ * Primary application init. GLUT and GL context setup passed to instance of OF.
+ *
+ * @param  void
+ *
+ * @return  void
+ */
 int main( ){
 
     ofAppGlutWindow window;
-	ofSetupOpenGL(&window, 1024,768, OF_WINDOW);			// <-------- setup the GL context
+	ofSetupOpenGL(&window, 1024,768, OF_WINDOW);
 
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
 	ofRunApp( new testApp() );
 
 }
