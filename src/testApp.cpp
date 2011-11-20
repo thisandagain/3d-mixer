@@ -1,6 +1,16 @@
+/**
+ * @package  3dmixer
+ * @author  Andrew Sliwinski <andrew@unitedworkshop.com>
+ */
+
+/**
+ * Includes
+ */
 #include "testApp.h"
 
-//--------------------------------------------------------------
+/**
+ * Setup
+ */
 void testApp::setup(){
 
 	ofBackground(34, 34, 34);
@@ -19,18 +29,13 @@ void testApp::setup(){
 	volume				= 0.1f;
 	bNoise 				= true;
 	
-	c1Audio.assign(bufferSize, 0.0);
-	c2Audio.assign(bufferSize, 0.0);
-	c3Audio.assign(bufferSize, 0.0);
-	c4Audio.assign(bufferSize, 0.0);
-	c5Audio.assign(bufferSize, 0.0);
-	c6Audio.assign(bufferSize, 0.0);
-	c7Audio.assign(bufferSize, 0.0);
-	c8Audio.assign(bufferSize, 0.0);
+    for (int i = 1; i <= 8; i++) {
+        channel[i].assign(bufferSize, 0.0);
+    }
 	
 	// Device information (debug)
-	//soundStream.listDevices();
-	//soundStream.setDeviceID(1);		//note some devices are input only and some are output only 
+	soundStream.listDevices();
+	soundStream.setDeviceID(1);		//note some devices are input only and some are output only 
 
 	soundStream.setup(this, 2, 0, sampleRate, bufferSize, 4);
 
@@ -38,221 +43,29 @@ void testApp::setup(){
 }
 
 
-//--------------------------------------------------------------
-void testApp::update(){
+/**
+ * Update
+ */
+void testApp::update(){}
 
-}
-
-//--------------------------------------------------------------
+/**
+ * Draw
+ */
 void testApp::draw(){
 
+    // Render labels
 	ofSetColor(225);
-	ofDrawBitmapString("3D SOUND - FRONT", 32, 32);
-	ofDrawBitmapString("3D SOUND - REAR", 32, 292);
-	//ofDrawBitmapString("press 's' to unpause the audio\npress 'e' to pause the audio", 31, 92);
+	ofDrawBitmapString("3D SOUND MIXER", 32, 32);
 	ofNoFill();
+    
+    // ----
 	
-	// -----
-	// -----
-	
-	// draw channel 1:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(32, 60, 0);
-			
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 1", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-					
-			ofBeginShape();
-			for (int i = 0; i < c1Audio.size(); i++){
-				float x =  ofMap(i, 0, c1Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c1Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-			
-		ofPopMatrix();
-	ofPopStyle();
-
-	// draw channel 2:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(512, 60, 0);
-			
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 2", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-					
-			ofBeginShape();
-			for (int i = 0; i < c2Audio.size(); i++){
-				float x =  ofMap(i, 0, c2Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c2Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-			
-		ofPopMatrix();
-	ofPopStyle();
-	
-	// draw channel 3:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(32, 160, 0);
-		
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 3", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-		
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-		
-			ofBeginShape();
-			for (int i = 0; i < c3Audio.size(); i++){
-				float x =  ofMap(i, 0, c3Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c3Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-		
-		ofPopMatrix();
-	ofPopStyle();
-	
-	// draw channel 4:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(512, 160, 0);
-		
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 4", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-		
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-		
-			ofBeginShape();
-			for (int i = 0; i < c4Audio.size(); i++){
-				float x =  ofMap(i, 0, c4Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c4Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-		
-		ofPopMatrix();
-	ofPopStyle();
-	
-	// -----
-	// -----
-	
-	// draw channel 5:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(32, 322, 0);
-		
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 5", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-		
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-		
-			ofBeginShape();
-			for (int i = 0; i < c5Audio.size(); i++){
-				float x =  ofMap(i, 0, c5Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c5Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-		
-		ofPopMatrix();
-	ofPopStyle();
-	
-	// draw channel 6:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(512, 322, 0);
-		
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 6", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-		
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-		
-			ofBeginShape();
-			for (int i = 0; i < c6Audio.size(); i++){
-				float x =  ofMap(i, 0, c6Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c6Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-		
-		ofPopMatrix();
-	ofPopStyle();
-	
-	// draw channel 7:
-	ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(32, 422, 0);
-		
-		ofSetColor(225);
-		ofDrawBitmapString("Channel 7", 4, 18);
-		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, 480, 100);
-		
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);
-		
-			ofBeginShape();
-			for (int i = 0; i < c7Audio.size(); i++){
-				float x =  ofMap(i, 0, c7Audio.size(), 0, 480, true);
-				ofVertex(x, 50 -c7Audio[i]*50.0f);
-			}
-			ofEndShape(false);
-		
-		ofPopMatrix();
-	ofPopStyle();
-	
-	// draw channel 8:
-	ofPushStyle();
-	ofPushMatrix();
-	ofTranslate(512, 422, 0);
-	
-	ofSetColor(225);
-	ofDrawBitmapString("Channel 8", 4, 18);
-	
-	ofSetLineWidth(1);	
-	ofRect(0, 0, 480, 100);
-	
-	ofSetColor(245, 58, 135);
-	ofSetLineWidth(3);
-	
-	ofBeginShape();
-	for (int i = 0; i < c8Audio.size(); i++){
-		float x =  ofMap(i, 0, c8Audio.size(), 0, 480, true);
-		ofVertex(x, 50 -c8Audio[i]*50.0f);
-	}
-	ofEndShape(false);
-	
-	ofPopMatrix();
-	ofPopStyle();
-	
-	// -----
-	// -----
-	
+    // Render audio GUI
+    audioGUI(32,60,1024,8);
+    
+    // ----
+    
+    // Render user hints (help menu)
 	ofSetColor(225);
 	string reportString		= "";
 	reportString			+= "volume: (" + ofToString(volume, 2) + ") modify with -/+ keys\n";
@@ -270,7 +83,13 @@ void testApp::draw(){
 }
 
 
-//--------------------------------------------------------------
+/**
+ * Key press event
+ *
+ * @param  int  Key
+ *
+ * @return  void
+ */
 void testApp::keyPressed  (int key){
 	if (key == '-' || key == '_' ){
 		volume -= 0.05;
@@ -289,12 +108,23 @@ void testApp::keyPressed  (int key){
 	}
 }
 
-//--------------------------------------------------------------
-void testApp::keyReleased  (int key){
+/**
+ * Key release event
+ *
+ * @param  int  Key
+ *
+ * @return  void
+ */
+void testApp::keyReleased  (int key){}
 
-}
-
-//--------------------------------------------------------------
+/**
+ * Mouse moved event
+ *
+ * @param  int  X position
+ * @param  int  Y position
+ *
+ * @return  void
+ */
 void testApp::mouseMoved(int x, int y ){
 	// Storage objects
 	float width		= (float) ofGetWidth();
@@ -305,29 +135,178 @@ void testApp::mouseMoved(int x, int y ){
 	yaxis = (float) y / height;
 }
 
-//--------------------------------------------------------------
+/**
+ * Mouse dragged event
+ *
+ * @param  int  X position
+ * @param  int  Y position
+ * @param  int  Mouse button
+ *
+ * @return  void
+ */
 void testApp::mouseDragged(int x, int y, int button){
 	int width = ofGetWidth();
 	pan = (float)x / (float)width;
 }
 
-//--------------------------------------------------------------
+/**
+ * Mouse pressed event
+ *
+ * @param  int  X position
+ * @param  int  Y position
+ * @param  int  Mouse button
+ *
+ * @return  void
+ */
 void testApp::mousePressed(int x, int y, int button){
 	//bNoise = true;
 }
 
-
-//--------------------------------------------------------------
+/**
+ * Mouse released event
+ *
+ * @param  int  X position
+ * @param  int  Y position
+ * @param  int  Mouse button
+ *
+ * @return  void
+ */
 void testApp::mouseReleased(int x, int y, int button){
 	//bNoise = false;
 }
 
-//--------------------------------------------------------------
+/**
+ * Window resized event
+ *
+ * @param  int  Width
+ * @param  int  Height
+ *
+ * @return  void
+ */
 void testApp::windowResized(int w, int h){
 
 }
 
-//--------------------------------------------------------------
+/**
+ * Message event handler.
+ *
+ * @param  ofMessage  Message
+ *
+ * @return  void
+ */
+void testApp::gotMessage(ofMessage msg){}
+
+/**
+ * Mouse drag event.
+ *
+ * @param  ofDragInfo  Drag info
+ *
+ * @return  void
+ */
+void testApp::dragEvent(ofDragInfo dragInfo){}
+
+/**
+ * Renders audio output GUI to GL context.
+ *
+ * @param  int  X position
+ * @param  int  Y position
+ * @param  int  UI width
+ * @param  int  Number of channels
+ *
+ * @return  void
+ */
+void testApp::audioGUI(int x, int y, int guiw, int nChannels) {
+    
+    // Iterate
+    for (int c = 1; c <= nChannels; c++) {
+        
+        // Modulus
+        // ----------------------------------
+        int row         = ( ceil (c / 2) + (c % 2) ) - 1;
+        int column      = 0;
+        if (c % 2 == 0) {
+            column      = 1;
+        }
+        
+        // Calculate offsets
+        // ----------------------------------
+        int unitw       = guiw / 2 - (x * 2);
+        int unith       = 100;
+        int ox          = x + (column * unitw);
+        int oy          = y + (row * unith);
+        
+        // Render channel
+        // ----------------------------------
+        ofPushStyle();
+            ofPushMatrix();
+        
+                ofTranslate(ox, oy, 0);
+                
+                ofSetColor(225);
+                ofDrawBitmapString("Channel " + ofToString(c), 4, 18);
+                
+                ofSetLineWidth(1);	
+                ofRect(0, 0, unitw, unith);
+                
+                ofSetColor(245, 58, 135);
+                ofSetLineWidth(3);
+                
+                ofBeginShape();
+                for (int i = 0; i < channel[c].size(); i++){
+                    float x =  ofMap(i, 0, channel[c].size(), 0, unitw, true);
+                    ofVertex(x, 50 -channel[c][i]*50.0f);
+                }
+                ofEndShape(false);
+            
+            ofPopMatrix();
+        ofPopStyle();
+        // ----------------------------------
+        
+        // Debug
+        printf("Iterator: %i\n", c);
+        printf("Row: %i\n", row);
+        printf("Column: %i\n", column);
+        printf("///////\n");
+        
+        /*
+         
+         ofPushStyle();
+         ofPushMatrix();
+         ofTranslate(512, 60, 0);
+         
+         ofSetColor(225);
+         ofDrawBitmapString("Channel 2", 4, 18);
+         
+         ofSetLineWidth(1);	
+         ofRect(0, 0, 480, 100);
+         
+         ofSetColor(245, 58, 135);
+         ofSetLineWidth(3);
+         
+         ofBeginShape();
+         for (int i = 0; i < c2Audio.size(); i++){
+         float x =  ofMap(i, 0, c2Audio.size(), 0, 480, true);
+         ofVertex(x, 50 -c2Audio[i]*50.0f);
+         }
+         ofEndShape(false);
+         
+         ofPopMatrix();
+         ofPopStyle();
+         
+         */
+        
+    }
+}
+
+/**
+ * Audio output (generator). Routes either a noise or sine generated signal to each output buffer.
+ *
+ * @param  float  Output
+ * @param  int  Buffer size
+ * @param  int  Number of channels
+ *
+ * @return  void
+ */
 void testApp::audioOut(float * output, int bufferSize, int nChannels){	
 	// sin (n) seems to have trouble when n is very large, so we
 	// keep phase in the range of 0-TWO_PI like this:
@@ -337,36 +316,28 @@ void testApp::audioOut(float * output, int bufferSize, int nChannels){
 
 	if ( bNoise == true) {
 		// ---------------------- noise --------------
-		for (int i = 0; i < bufferSize; i++){
-			c1Audio[i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
-			c2Audio[i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
-			c3Audio[i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
-			c4Audio[i] = output[i*nChannels + 3] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
-			
-			c5Audio[i] = output[i*nChannels + 4] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
-			c6Audio[i] = output[i*nChannels + 5] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
-			c7Audio[i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
-			c8Audio[i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
-		}
+        for (int i = 0; i < bufferSize; i++){                                         
+            channel[1][i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
+            channel[2][i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
+            channel[3][i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
+            channel[4][i] = output[i*nChannels + 3] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
+            
+            channel[5][i] = output[i*nChannels + 4] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
+            channel[6][i] = output[i*nChannels + 5] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
+            channel[7][i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
+            channel[8][i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
+        }
 	} else {
 		// ---------------------- sine wave ----------
 		phaseAdder = 0.95f * phaseAdder + 0.05f * phaseAdderTarget;
 		for (int i = 0; i < bufferSize; i++){
 			phase += phaseAdder;
 			float sample = sin(phase);
+            /*
 			c1Audio[i] = output[i*nChannels    ] = sample * volume * ( xaxis );
 			c2Audio[i] = output[i*nChannels + 1] = sample * volume * ( xaxis );
+             */
 		}
 	}
-
-}
-
-//--------------------------------------------------------------
-void testApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
