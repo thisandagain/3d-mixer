@@ -29,8 +29,8 @@ void testApp::setup(){
 	volume				= 0.1f;
 	bNoise 				= true;
 	
-    for (int i = 1; i <= 8; i++) {
-        channel[i].assign(bufferSize, 0.0);
+    for (int c = 1; c <= 8; c++) {
+        channel[c].assign(bufferSize, 0.0);
     }
 	
 	// Device information (debug)
