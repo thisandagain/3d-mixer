@@ -1,13 +1,27 @@
+/**
+ * @package  3dmixer
+ * @author  Andrew Sliwinski <andrew@unitedworkshop.com>
+ */
+
+/**
+ * Define
+ */
 #ifndef _TEST_APP
 #define _TEST_APP
 
-
+/**
+ * Includes
+ */
 #include "ofMain.h"
 
+/**
+ * Creates class as an extension of ofBaseApp.
+ */
 class testApp : public ofBaseApp{
 
 	public:
 
+		// Basic
 		void setup();
 		void update();
 		void draw();
@@ -22,11 +36,14 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
+		// Define functions
+        void audioGUI(int x, int y, int guiw, int nChannels);
 		void audioOut(float * input, int bufferSize, int nChannels);
 		
-		
+		// Sound stream
 		ofSoundStream soundStream;
 
+		// Trackers
 		float   xaxis;
 		float   yaxis;
 		float   zaxis;
@@ -37,16 +54,10 @@ class testApp : public ofBaseApp{
 		bool 	bNoise;
 		float 	volume;
 	
-		vector <float> c1Audio;
-		vector <float> c2Audio;
-		vector <float> c3Audio;
-		vector <float> c4Audio;
-		vector <float> c5Audio;
-		vector <float> c6Audio;
-		vector <float> c7Audio;
-		vector <float> c8Audio;
+		// Output channels (# of channels + 1)
+        vector <float> channel[9];
 		
-		//------------------- for the simple sine wave synthesis
+		// Sine wave synthesis
 		float 	targetFrequency;
 		float 	phase;
 		float 	phaseAdder;
