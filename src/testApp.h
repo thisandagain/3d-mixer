@@ -24,6 +24,7 @@ class testApp : public ofBaseApp{
 
 		// Basic
 		void setup();
+        void exit();
 		void update();
 		void draw();
 
