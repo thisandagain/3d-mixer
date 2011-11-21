@@ -36,7 +36,7 @@ void testApp::setup(){
     for (int c = 1; c <= 8; c++) {
         channel[c].assign(bufferSize, 0.0);
     }
-	
+	 
 	// Device information (debug)
 	soundStream.listDevices();
 	soundStream.setDeviceID(1);		//note some devices are input only and some are output only 
@@ -45,6 +45,21 @@ void testApp::setup(){
 	soundStream.setup(this, 2, 0, sampleRate, bufferSize, 4);
 }
 
+/**
+ * Exit
+ */
+void testApp::exit() {
+    printf("Exiting...");
+    
+    // ----
+    
+    ofSoundStreamStop();
+    ofSoundStreamClose();
+    
+    // ----
+    
+    printf(" Done.\n");
+}
 
 /**
  * Update
