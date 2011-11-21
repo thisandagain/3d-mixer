@@ -13,8 +13,12 @@
  */
 void testApp::setup(){
 
+    // GL basics
 	ofBackground(34, 34, 34);
-
+    ofSetFrameRate(60);
+    
+    // -----------------------------
+    
 	// 8 output channels,
 	// 0 input channels
 	// 22050 samples per second
@@ -37,9 +41,8 @@ void testApp::setup(){
 	soundStream.listDevices();
 	soundStream.setDeviceID(1);		//note some devices are input only and some are output only 
 
+    // Setup stream
 	soundStream.setup(this, 2, 0, sampleRate, bufferSize, 4);
-
-	ofSetFrameRate(60);
 }
 
 
@@ -261,40 +264,7 @@ void testApp::audioGUI(int x, int y, int guiw, int nChannels) {
             ofPopMatrix();
         ofPopStyle();
         // ----------------------------------
-        
-        // Debug
-        printf("Iterator: %i\n", c);
-        printf("Row: %i\n", row);
-        printf("Column: %i\n", column);
-        printf("///////\n");
-        
-        /*
-         
-         ofPushStyle();
-         ofPushMatrix();
-         ofTranslate(512, 60, 0);
-         
-         ofSetColor(225);
-         ofDrawBitmapString("Channel 2", 4, 18);
-         
-         ofSetLineWidth(1);	
-         ofRect(0, 0, 480, 100);
-         
-         ofSetColor(245, 58, 135);
-         ofSetLineWidth(3);
-         
-         ofBeginShape();
-         for (int i = 0; i < c2Audio.size(); i++){
-         float x =  ofMap(i, 0, c2Audio.size(), 0, 480, true);
-         ofVertex(x, 50 -c2Audio[i]*50.0f);
-         }
-         ofEndShape(false);
-         
-         ofPopMatrix();
-         ofPopStyle();
-         
-         */
-        
+
     }
 }
 
@@ -317,6 +287,7 @@ void testApp::audioOut(float * output, int bufferSize, int nChannels){
 	if ( bNoise == true) {
 		// ---------------------- noise --------------
         for (int i = 0; i < bufferSize; i++){                                         
+            // Send to channel buffer
             channel[1][i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
             channel[2][i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
             channel[3][i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
@@ -331,12 +302,19 @@ void testApp::audioOut(float * output, int bufferSize, int nChannels){
 		// ---------------------- sine wave ----------
 		phaseAdder = 0.95f * phaseAdder + 0.05f * phaseAdderTarget;
 		for (int i = 0; i < bufferSize; i++){
-			phase += phaseAdder;
+			// Create sample
+            phase += phaseAdder;
 			float sample = sin(phase);
-            /*
-			c1Audio[i] = output[i*nChannels    ] = sample * volume * ( xaxis );
-			c2Audio[i] = output[i*nChannels + 1] = sample * volume * ( xaxis );
-             */
+            
+            // Send to channel buffer
+            channel[1][i] = output[i*nChannels + 0] = sample * volume * ( xaxis );
+            channel[2][i] = output[i*nChannels + 1] = sample * volume * ( xaxis );
+            channel[3][i] = output[i*nChannels + 2] = sample * volume * ( xaxis );
+            channel[4][i] = output[i*nChannels + 3] = sample * volume * ( xaxis );
+            channel[5][i] = output[i*nChannels + 4] = sample * volume * ( xaxis );
+            channel[6][i] = output[i*nChannels + 5] = sample * volume * ( xaxis );
+            channel[7][i] = output[i*nChannels + 6] = sample * volume * ( xaxis );
+            channel[8][i] = output[i*nChannels + 7] = sample * volume * ( xaxis );
 		}
 	}
 
