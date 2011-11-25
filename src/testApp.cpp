@@ -30,9 +30,13 @@ void testApp::setup(){
 	phase 				= 0;
 	phaseAdder 			= 0.0f;
 	phaseAdderTarget 	= 0.0f;
-	volume				= 0.1f;
 	bNoise 				= true;
-	
+
+    volume              = 0.5f;
+    xaxis               = 0.5f;
+    yaxis               = 0.5f;
+    zaxis               = 0.5f;
+    
     for (int c = 1; c <= 8; c++) {
         channel[c].assign(bufferSize, 0.0);
     }
@@ -89,6 +93,7 @@ void testApp::draw(){
 	reportString			+= "volume: (" + ofToString(volume, 2) + ") modify with -/+ keys\n";
 	reportString			+= "x-axis: (" + ofToString(xaxis, 2) + ") modify with mouse x\n";
 	reportString			+= "y-axis: (" + ofToString(yaxis, 2) + ") modify with mouse y\n";
+    reportString            += "z-axis: (" + ofToString(zaxis, 2) + ") modify with mouse drag y\n";
 	reportString			+= "synthesis: ";
 	
 	if( !bNoise ){
@@ -163,8 +168,8 @@ void testApp::mouseMoved(int x, int y ){
  * @return  void
  */
 void testApp::mouseDragged(int x, int y, int button){
-	int width = ofGetWidth();
-	pan = (float)x / (float)width;
+	int height = ofGetHeight();
+	zaxis = (float)y / (float)height;
 }
 
 /**
@@ -248,7 +253,7 @@ void testApp::audioGUI(int x, int y, int guiw, int nChannels) {
         
         // Calculate offsets
         // ----------------------------------
-        int unitw       = guiw / 2 - (x * 2);
+        int unitw       = guiw / 2 - (x);
         int unith       = 100;
         int ox          = x + (column * unitw);
         int oy          = y + (row * unith);
@@ -303,15 +308,15 @@ void testApp::audioOut(float * output, int bufferSize, int nChannels){
 		// ---------------------- noise --------------
         for (int i = 0; i < bufferSize; i++){                                         
             // Send to channel buffer
-            channel[1][i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
-            channel[2][i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
-            channel[3][i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
-            channel[4][i] = output[i*nChannels + 3] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
+            channel[1][i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 ) * ( zaxis - 1 );
+            channel[2][i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 ) * ( zaxis - 1 );
+            channel[3][i] = output[i*nChannels + 2] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 ) * ( zaxis - 1 );
+            channel[4][i] = output[i*nChannels + 3] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 ) * ( zaxis - 1 );
             
-            channel[5][i] = output[i*nChannels + 4] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 );
-            channel[6][i] = output[i*nChannels + 5] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 );
-            channel[7][i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 );
-            channel[8][i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 );
+            channel[5][i] = output[i*nChannels + 4] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 ) * ( zaxis - 0 );
+            channel[6][i] = output[i*nChannels + 5] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 ) * ( zaxis - 0 );
+            channel[7][i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 ) * ( zaxis - 0 );
+            channel[8][i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 ) * ( zaxis - 0 );
         }
 	} else {
 		// ---------------------- sine wave ----------
