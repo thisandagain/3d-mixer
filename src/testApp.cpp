@@ -11,7 +11,7 @@
 /**
  * Setup
  */
-void testApp::setup(){
+void testApp::setup() {
 
     // GL basics
 	ofBackground(34, 34, 34);
@@ -30,8 +30,8 @@ void testApp::setup(){
     sample.load("/Samples/sample.wav");     // Supports mono or stereo WAV files
 	sample.setLooping(true);
     
-	bNoise 				= true;
-    volume              = 0.5f;
+	bNoise 				= false;
+    volume              = 0.1f;
     xaxis               = 0.5f;
     yaxis               = 0.5f;
     zaxis               = 0.5f;
@@ -41,9 +41,10 @@ void testApp::setup(){
     }
 	 
 	// Device information
-    //soundStream.listDevices();
-	soundStream.setDeviceID(1);             // Some devices are input only and some are output only
-    int outputChannels  = 2;
+    // @STUB: Needs to auto detect device with most outputs, select it, and update output channel integer
+    soundStream.listDevices();
+	soundStream.setDeviceID(3);             // Some devices are input only and some are output only
+    int outputChannels  = 8;
     
     // Setup stream
 	soundStream.setup(this, outputChannels, 0, sampleRate, bufferSize, 4);
@@ -120,30 +121,42 @@ void testApp::draw() {
  * @return  void
  */
 void testApp::keyPressed  (int key) {
-	if ( key == '-' || key == '_' ) {
-		volume -= 0.05;
-		volume = MAX(volume, 0);
-	} else if (key == '+' || key == '=' ){
-		volume += 0.05;
-		volume = MIN(volume, 1);
-	}
-	
-	if ( key == 's' ) {
-		soundStream.start();
-	}
-	
-	if ( key == 'e' ) {
-		soundStream.stop();
-	}
-    
-    if ( key == 'm' ) {
-        if (bNoise) {
-            bNoise = false;
-            sample.play();
-        } else {
-            bNoise = true;
-            sample.stop();
-        }
+	switch (key) {
+        case '-':
+        case '_':
+            volume -= 0.05;
+            volume = MAX(volume, 0);
+            break;
+            
+        case '+':
+        case '=':
+            volume += 0.05;
+            volume = MIN(volume, 1);
+            break;
+        
+        case 's':
+            soundStream.start();
+            break;
+            
+        case 'e':
+            soundStream.stop();
+            break;
+            
+        case 'm':
+            if (bNoise) {
+                bNoise = false;
+                sample.play();
+            } else {
+                bNoise = true;
+                sample.stop();
+            }
+            break;
+            
+        case 'c':
+            xaxis = 0.5f;
+            yaxis = 0.5f;
+            zaxis = 0.5f;
+            break;
     }
 }
 

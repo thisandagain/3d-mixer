@@ -49,15 +49,13 @@ class testApp : public ofBaseApp{
         Sample  sample;
 
 		// Trackers
+        float 	volume;
 		float   xaxis;
 		float   yaxis;
 		float   zaxis;
 	
-		float 	pan;
-		float	tilt;
 		int		sampleRate;
 		bool 	bNoise;
-		float 	volume;
     
 		// Output channels (# of channels + 1)
         vector <float> channel[9];
