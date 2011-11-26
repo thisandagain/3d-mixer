@@ -1,17 +1,10 @@
-/**
- * @package  3dmixer
- * @author  Andrew Sliwinski <andrew@unitedworkshop.com>
- */
-
-/**
- * Includes
- */
 #include "Sample.h"
 #include "ofMain.h"
 
 
 Sample::~Sample()
 {
+    //delete myPath;
     delete myData;
     myChunkSize = NULL;
     mySubChunk1Size = NULL;
@@ -24,7 +17,7 @@ Sample::~Sample()
     myDataSize = NULL;
 }
 
-// Empty constructor
+// empty constructor
 Sample::Sample()
 {
     position = 0;
@@ -32,7 +25,7 @@ Sample::Sample()
     soundStatus = NONE;
 }
 
-// Constructor takes a wav path
+// constructor takes a wav path
 Sample::Sample(string tmpPath)
 {
     position = 0;
@@ -43,14 +36,12 @@ Sample::Sample(string tmpPath)
     read();
 }
 
-// Set path
 void Sample::setPath(string tmpPath)
 {
     myPath = tmpPath;
 
 }
 
-// Set looping
 void Sample::setLooping(bool loop)
 {
     if(loop) {
@@ -61,43 +52,39 @@ void Sample::setLooping(bool loop)
     }
 }
 
-// Get is looping
 bool Sample::getIsLooping()
 {
     if(soundStatus & LOOPING) return true;
     else return false;
 }
 
-// Get is loaded
 bool Sample::getIsLoaded()
 {
     if(soundStatus & LOADED) return true;
     else return false;
 }
 
-// Get is playing
 bool Sample::getIsPlaying()
 {
     if(soundStatus & PLAYING) return true;
     else return false;
 }
 
-// Get is paused
 bool Sample::getIsPaused()
 {
     if(soundStatus & PAUSED) return true;
     else return false;
 }
 
-// Load from path
 bool Sample::load(string tmpPath) {
     myPath = tmpPath;
 	bool result = read();
 	return result;
 }
 
-// Generate waveform from buffer
-void Sample::generateWaveForm(vector<MiniMaxima> * _waveForm) {
+void Sample::generateWaveForm(vector<MiniMaxima> * _waveForm)
+{
+
 	_waveForm->clear();
 
 	bool loopState = getIsLooping();
@@ -143,8 +130,8 @@ void Sample::generateWaveForm(vector<MiniMaxima> * _waveForm) {
 	if(playState) play();
 }
 
-// Draw waveform
-void Sample::drawWaveForm(int _x, int _y, int _w, int _h, vector<MiniMaxima> * _waveForm) {
+void Sample::drawWaveForm(int _x, int _y, int _w, int _h, vector<MiniMaxima> * _waveForm)
+{
 
 	float waveFormZoomX = (float)_waveForm->size()/(float)_w;
 
@@ -187,7 +174,6 @@ void Sample::drawWaveForm(int _x, int _y, int _w, int _h, vector<MiniMaxima> * _
 	glPopMatrix();
 }
 
-// Stop
 void Sample::stop()
 {
     position = 0;
@@ -195,7 +181,6 @@ void Sample::stop()
     soundStatus &= ~PLAYING;
 }
 
-// Play
 void Sample::play()
 {
     if(speed > 0)
@@ -205,7 +190,6 @@ void Sample::play()
     soundStatus |= PLAYING;
 }
 
-// Pause
 void Sample::setPaused(bool bPaused)
 {
     if(bPaused) {
@@ -216,19 +200,16 @@ void Sample::setPaused(bool bPaused)
     }
 }
 
-// Set playback speed
 void Sample::setSpeed(double spd)
 {
     speed = spd;
 }
 
-// Get playback speed
 double Sample::getSpeed()
 {
     return speed;
 }
 
-// Get samplerate
 int Sample::getSampleRate()
 {
     return mySampleRate;
@@ -255,7 +236,6 @@ int Sample::getSampleRate()
 //	return(output);
 //}
 
-// Update
 double Sample::update()
 {
     if(!(soundStatus & PLAYING)) return 0;
