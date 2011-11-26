@@ -25,13 +25,15 @@ void testApp::setup(){
 	// 512 samples per buffer
 	// 4 num buffers (latency)
 	
-	int bufferSize		= 512;
+	int bufferSize		= 256;
 	sampleRate 			= 44100;
-	phase 				= 0;
-	phaseAdder 			= 0.0f;
-	phaseAdderTarget 	= 0.0f;
+    sample.load("/Users/asliwinski/Desktop/startrek.wav");              // Supports mono or stereo WAV files
+	sample.setLooping(true);
+    sample.setSpeed(1.0f);
+	sample.generateWaveForm(&waveForm);
+    sample.play();
+    
 	bNoise 				= true;
-
     volume              = 0.5f;
     xaxis               = 0.5f;
     yaxis               = 0.5f;
@@ -41,12 +43,15 @@ void testApp::setup(){
         channel[c].assign(bufferSize, 0.0);
     }
 	 
-	// Device information (debug)
-	soundStream.listDevices();
-	soundStream.setDeviceID(1);		//note some devices are input only and some are output only 
-
+	// Device information
+    /*
+    soundStream.listDevices();
+	soundStream.setDeviceID(1);         // Some devices are input only and some are output only
+    */
+    int outputChannels  = 2;
+    
     // Setup stream
-	soundStream.setup(this, 2, 0, sampleRate, bufferSize, 4);
+	soundStream.setup(this, outputChannels, 0, sampleRate, bufferSize, 4);
 }
 
 /**
@@ -57,8 +62,8 @@ void testApp::exit() {
     
     // ----
     
-    ofSoundStreamStop();
-    ofSoundStreamClose();
+    soundStream.stop();
+    soundStream.close();
     
     // ----
     
@@ -68,7 +73,7 @@ void testApp::exit() {
 /**
  * Update
  */
-void testApp::update(){}
+void testApp::update() {}
 
 /**
  * Draw
@@ -97,10 +102,15 @@ void testApp::draw(){
 	reportString			+= "synthesis: ";
 	
 	if( !bNoise ){
-		reportString += "sine wave (" + ofToString(targetFrequency, 2) + "hz) modify with mouse y";
+        reportString += "sample";
+		//reportString += "sine wave (" + ofToString(targetFrequency, 2) + "hz) modify with mouse y";
 	}else{
-		reportString += "noise";	
+		reportString += "noise";
 	}
+    
+    reportString            += "\n\n";
+    reportString            += "press 'm' to toggle output modes.";
+    
 	ofDrawBitmapString(reportString, 32, 579);
 
 }
@@ -113,8 +123,8 @@ void testApp::draw(){
  *
  * @return  void
  */
-void testApp::keyPressed  (int key){
-	if (key == '-' || key == '_' ){
+void testApp::keyPressed  (int key) {
+	if ( key == '-' || key == '_' ) {
 		volume -= 0.05;
 		volume = MAX(volume, 0);
 	} else if (key == '+' || key == '=' ){
@@ -122,13 +132,21 @@ void testApp::keyPressed  (int key){
 		volume = MIN(volume, 1);
 	}
 	
-	if( key == 's' ){
+	if ( key == 's' ) {
 		soundStream.start();
 	}
 	
-	if( key == 'e' ){
+	if ( key == 'e' ) {
 		soundStream.stop();
 	}
+    
+    if ( key == 'm' ) {
+        if (bNoise) {
+            bNoise = false;
+        } else {
+            bNoise = true;
+        }
+    }
 }
 
 /**
@@ -181,9 +199,7 @@ void testApp::mouseDragged(int x, int y, int button){
  *
  * @return  void
  */
-void testApp::mousePressed(int x, int y, int button){
-	//bNoise = true;
-}
+void testApp::mousePressed(int x, int y, int button){}
 
 /**
  * Mouse released event
@@ -194,9 +210,7 @@ void testApp::mousePressed(int x, int y, int button){
  *
  * @return  void
  */
-void testApp::mouseReleased(int x, int y, int button){
-	//bNoise = false;
-}
+void testApp::mouseReleased(int x, int y, int button){}
 
 /**
  * Window resized event
@@ -206,9 +220,7 @@ void testApp::mouseReleased(int x, int y, int button){
  *
  * @return  void
  */
-void testApp::windowResized(int w, int h){
-
-}
+void testApp::windowResized(int w, int h){}
 
 /**
  * Message event handler.
@@ -274,12 +286,16 @@ void testApp::audioGUI(int x, int y, int guiw, int nChannels) {
                 ofSetColor(245, 58, 135);
                 ofSetLineWidth(3);
                 
-                ofBeginShape();
-                for (int i = 0; i < channel[c].size(); i++){
-                    float x =  ofMap(i, 0, channel[c].size(), 0, unitw, true);
-                    ofVertex(x, 50 -channel[c][i]*50.0f);
+                if (bNoise) {
+                    ofBeginShape();
+                    for (int i = 0; i < channel[c].size(); i++){
+                        float x =  ofMap(i, 0, channel[c].size(), 0, unitw, true);
+                        ofVertex(x, 50 -channel[c][i]*50.0f);
+                    }
+                    ofEndShape(false);
+                } else {
+                    sample.drawWaveForm(ox, oy, unitw, unith, &waveForm);
                 }
-                ofEndShape(false);
             
             ofPopMatrix();
         ofPopStyle();
@@ -297,16 +313,11 @@ void testApp::audioGUI(int x, int y, int guiw, int nChannels) {
  *
  * @return  void
  */
-void testApp::audioOut(float * output, int bufferSize, int nChannels){	
-	// sin (n) seems to have trouble when n is very large, so we
-	// keep phase in the range of 0-TWO_PI like this:
-	while (phase > TWO_PI){
-		phase -= TWO_PI;
-	}
-
+void testApp::audioRequested(float * output, int bufferSize, int nChannels) {	
+    
 	if ( bNoise == true) {
 		// ---------------------- noise --------------
-        for (int i = 0; i < bufferSize; i++){                                         
+        for (int i = 0; i < bufferSize; i++) {                                         
             // Send to channel buffer
             channel[1][i] = output[i*nChannels + 0] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 1 ) * ( zaxis - 1 );
             channel[2][i] = output[i*nChannels + 1] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 1 ) * ( zaxis - 1 );
@@ -318,24 +329,44 @@ void testApp::audioOut(float * output, int bufferSize, int nChannels){
             channel[7][i] = output[i*nChannels + 6] = ofRandom(0, 1) * volume * ( xaxis - 1 ) * ( yaxis - 0 ) * ( zaxis - 0 );
             channel[8][i] = output[i*nChannels + 7] = ofRandom(0, 1) * volume * ( xaxis - 0 ) * ( yaxis - 0 ) * ( zaxis - 0 );
         }
-	} else {
-		// ---------------------- sine wave ----------
-		phaseAdder = 0.95f * phaseAdder + 0.05f * phaseAdderTarget;
-		for (int i = 0; i < bufferSize; i++){
-			// Create sample
-            phase += phaseAdder;
-			float sample = sin(phase);
+    } else {
+        // ---------------------- sample -------------
+        if (sample.getChannels() == 1 || sample.getChannels() == 2) {
+            float smp = sample.update();
             
-            // Send to channel buffer
-            channel[1][i] = output[i*nChannels + 0] = sample * volume * ( xaxis );
-            channel[2][i] = output[i*nChannels + 1] = sample * volume * ( xaxis );
-            channel[3][i] = output[i*nChannels + 2] = sample * volume * ( xaxis );
-            channel[4][i] = output[i*nChannels + 3] = sample * volume * ( xaxis );
-            channel[5][i] = output[i*nChannels + 4] = sample * volume * ( xaxis );
-            channel[6][i] = output[i*nChannels + 5] = sample * volume * ( xaxis );
-            channel[7][i] = output[i*nChannels + 6] = sample * volume * ( xaxis );
-            channel[8][i] = output[i*nChannels + 7] = sample * volume * ( xaxis );
-		}
-	}
-
+            /*
+            printf("Loaded: %d\n", sample.getIsLoaded());
+            printf("Playing: %d\n", sample.getIsPlaying());
+            printf("Position: %f\n", sample.getPosition());
+            printf("Speed: %f\n", sample.getSpeed());
+            */
+            
+            for (int i = 0; i < bufferSize; i++) {
+                // Send to channel buffer
+                channel[1][i] = output[i*nChannels + 0] = smp * volume * ( xaxis - 1 ) * ( yaxis - 1 ) * ( zaxis - 1 );
+                channel[2][i] = output[i*nChannels + 1] = smp * volume * ( xaxis - 0 ) * ( yaxis - 1 ) * ( zaxis - 1 );
+                channel[3][i] = output[i*nChannels + 2] = smp * volume * ( xaxis - 1 ) * ( yaxis - 0 ) * ( zaxis - 1 );
+                channel[4][i] = output[i*nChannels + 3] = smp * volume * ( xaxis - 0 ) * ( yaxis - 0 ) * ( zaxis - 1 );
+                
+                channel[5][i] = output[i*nChannels + 4] = smp * volume * ( xaxis - 1 ) * ( yaxis - 1 ) * ( zaxis - 0 );
+                channel[6][i] = output[i*nChannels + 5] = smp * volume * ( xaxis - 0 ) * ( yaxis - 1 ) * ( zaxis - 0 );
+                channel[7][i] = output[i*nChannels + 6] = smp * volume * ( xaxis - 1 ) * ( yaxis - 0 ) * ( zaxis - 0 );
+                channel[8][i] = output[i*nChannels + 7] = smp * volume * ( xaxis - 0 ) * ( yaxis - 0 ) * ( zaxis - 0 );
+            }
+        } else {
+            for (int i = 0; i < bufferSize; i++) {
+                // Send (silence) to channel buffer
+                channel[1][i] = output[i*nChannels + 0] = 0.0;
+                channel[2][i] = output[i*nChannels + 1] = 0.0;
+                channel[3][i] = output[i*nChannels + 2] = 0.0;
+                channel[4][i] = output[i*nChannels + 3] = 0.0;
+                
+                channel[5][i] = output[i*nChannels + 4] = 0.0;
+                channel[6][i] = output[i*nChannels + 5] = 0.0;
+                channel[7][i] = output[i*nChannels + 6] = 0.0;
+                channel[8][i] = output[i*nChannels + 7] = 0.0;
+            }
+        }
+    }
+    
 }
