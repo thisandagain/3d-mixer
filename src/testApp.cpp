@@ -19,7 +19,7 @@ void testApp::setup(){
     
     // -----------------------------
     
-	// 8 output channels,
+	// 8 output channels
 	// 0 input channels
 	// 22050 samples per second
 	// 512 samples per buffer
@@ -27,11 +27,8 @@ void testApp::setup(){
 	
 	int bufferSize		= 256;
 	sampleRate 			= 44100;
-    sample.load("/Users/asliwinski/Desktop/startrek.wav");              // Supports mono or stereo WAV files
+    sample.load("/Samples/sample.wav");     // Supports mono or stereo WAV files
 	sample.setLooping(true);
-    sample.setSpeed(1.0f);
-	sample.generateWaveForm(&waveForm);
-    sample.play();
     
 	bNoise 				= true;
     volume              = 0.5f;
@@ -44,10 +41,8 @@ void testApp::setup(){
     }
 	 
 	// Device information
-    /*
-    soundStream.listDevices();
-	soundStream.setDeviceID(1);         // Some devices are input only and some are output only
-    */
+    //soundStream.listDevices();
+	soundStream.setDeviceID(1);             // Some devices are input only and some are output only
     int outputChannels  = 2;
     
     // Setup stream
@@ -78,7 +73,7 @@ void testApp::update() {}
 /**
  * Draw
  */
-void testApp::draw(){
+void testApp::draw() {
 
     // Render labels
 	ofSetColor(225);
@@ -102,14 +97,15 @@ void testApp::draw(){
 	reportString			+= "synthesis: ";
 	
 	if( !bNoise ){
-        reportString += "sample";
-		//reportString += "sine wave (" + ofToString(targetFrequency, 2) + "hz) modify with mouse y";
+        reportString += "sample\n";
+		reportString += "position: " + ofToString(sample.getPosition(), 2) + "\n";
+        reportString += "length: " + ofToString(sample.getLength(), 2) + "\n";
 	}else{
-		reportString += "noise";
+		reportString += "noise\n";
 	}
     
-    reportString            += "\n\n";
-    reportString            += "press 'm' to toggle output modes.";
+    reportString            += "\n";
+    reportString            += "press 'm' to toggle output modes";
     
 	ofDrawBitmapString(reportString, 32, 579);
 
@@ -143,8 +139,10 @@ void testApp::keyPressed  (int key) {
     if ( key == 'm' ) {
         if (bNoise) {
             bNoise = false;
+            sample.play();
         } else {
             bNoise = true;
+            sample.stop();
         }
     }
 }
@@ -156,7 +154,7 @@ void testApp::keyPressed  (int key) {
  *
  * @return  void
  */
-void testApp::keyReleased  (int key){}
+void testApp::keyReleased(int key){}
 
 /**
  * Mouse moved event
@@ -286,26 +284,21 @@ void testApp::audioGUI(int x, int y, int guiw, int nChannels) {
                 ofSetColor(245, 58, 135);
                 ofSetLineWidth(3);
                 
-                if (bNoise) {
-                    ofBeginShape();
-                    for (int i = 0; i < channel[c].size(); i++){
-                        float x =  ofMap(i, 0, channel[c].size(), 0, unitw, true);
-                        ofVertex(x, 50 -channel[c][i]*50.0f);
-                    }
-                    ofEndShape(false);
-                } else {
-                    sample.drawWaveForm(ox, oy, unitw, unith, &waveForm);
+                ofBeginShape();
+                for (int i = 0; i < channel[c].size(); i++){
+                    float x =  ofMap(i, 0, channel[c].size(), 0, unitw, true);
+                    ofVertex(x, 50 -channel[c][i]*50.0f);
                 }
+                ofEndShape(false);
             
             ofPopMatrix();
         ofPopStyle();
-        // ----------------------------------
 
     }
 }
 
 /**
- * Audio output (generator). Routes either a noise or sine generated signal to each output buffer.
+ * Audio output handler. Routes either noise (bNoise) or sample to each output channel.
  *
  * @param  float  Output
  * @param  int  Buffer size
@@ -331,17 +324,11 @@ void testApp::audioRequested(float * output, int bufferSize, int nChannels) {
         }
     } else {
         // ---------------------- sample -------------
-        if (sample.getChannels() == 1 || sample.getChannels() == 2) {
-            float smp = sample.update();
-            
-            /*
-            printf("Loaded: %d\n", sample.getIsLoaded());
-            printf("Playing: %d\n", sample.getIsPlaying());
-            printf("Position: %f\n", sample.getPosition());
-            printf("Speed: %f\n", sample.getSpeed());
-            */
-            
+        if (sample.getChannels() == 1 || sample.getChannels() == 2) {            
             for (int i = 0; i < bufferSize; i++) {
+                // Update
+                float smp = sample.update();
+                
                 // Send to channel buffer
                 channel[1][i] = output[i*nChannels + 0] = smp * volume * ( xaxis - 1 ) * ( yaxis - 1 ) * ( zaxis - 1 );
                 channel[2][i] = output[i*nChannels + 1] = smp * volume * ( xaxis - 0 ) * ( yaxis - 1 ) * ( zaxis - 1 );
