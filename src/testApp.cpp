@@ -43,7 +43,8 @@ void testApp::setup() {
 	// Device information
     // @STUB: Needs to auto detect device with most outputs, select it, and update output channel integer
     soundStream.listDevices();
-    int outputChannels  = 8;
+	soundStream.setDeviceID(1);             // Some devices are input only and some are output only
+    int outputChannels  = 2;
     
     // Setup stream
 	soundStream.setup(this, outputChannels, 0, sampleRate, bufferSize, 4);
