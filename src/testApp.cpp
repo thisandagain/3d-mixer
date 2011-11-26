@@ -15,7 +15,7 @@ void testApp::setup(){
 
     // GL basics
 	ofBackground(34, 34, 34);
-    ofSetFrameRate(60);
+    ofSetFrameRate(30);
     
     // -----------------------------
     
