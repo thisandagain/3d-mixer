@@ -27,7 +27,7 @@ void testApp::setup() {
 	
 	int bufferSize		= 256;
 	sampleRate 			= 44100;
-    sample.load("/Samples/sample.wav");     // Supports mono or stereo WAV files
+    sample.load("/Samples/sample.wav");     // Supports mono or stereo WAV files (44100 w/ PCM (lossless) encoding)
 	sample.setLooping(true);
     
 	bNoise 				= false;
@@ -43,7 +43,6 @@ void testApp::setup() {
 	// Device information
     // @STUB: Needs to auto detect device with most outputs, select it, and update output channel integer
     soundStream.listDevices();
-	soundStream.setDeviceID(3);             // Some devices are input only and some are output only
     int outputChannels  = 8;
     
     // Setup stream
