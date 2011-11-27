@@ -43,8 +43,8 @@ void testApp::setup() {
 	// Device information
     // @STUB: Needs to auto detect device with most outputs, select it, and update output channel integer
     soundStream.listDevices();
-	soundStream.setDeviceID(1);             // Some devices are input only and some are output only
-    int outputChannels  = 2;
+	soundStream.setDeviceID(2);             // Some devices are input only and some are output only
+    int outputChannels  = 8;
     
     // Setup stream
 	soundStream.setup(this, outputChannels, 0, sampleRate, bufferSize, 4);
@@ -152,7 +152,7 @@ void testApp::keyPressed  (int key) {
             }
             break;
             
-        case 'c':
+        case 'b':
             xaxis = 0.5f;
             yaxis = 0.5f;
             zaxis = 0.5f;
